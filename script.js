@@ -1,23 +1,59 @@
-const title = "Калькулятор"
-let screens = "Простые, Сложные, Интерактивные";
-let screenPrice = 1000;
+'use strict'
+const title = prompt("Как называется ваш проект?", "Калькулятор");
+let screens = prompt("Какие типы экранов нужно разработать?", "Простые");
+let screenPrice = +prompt("Сколько будет стоить данная работа?", 10000);
+let service1 = prompt("Какой дополнительный тип услуги нужен?", "Метрика");
+let servicePrice1 = +prompt("Сколько это будет стоить?", 2000);
+let service2 = prompt("Какой дополнительный тип услуги нужен?", "Попап");
+let servicePrice2 = +prompt("Сколько это будет стоить?", 1000);
+
+const getAllServicePrices = function() {
+  return servicePrice1 + servicePrice2;
+};
+
+let allServicePrices = getAllServicePrices()
+let fullPrice = getFullPrice();
 let rollback = 15;
-let fullPrice = 1500;
-let adaptive = true;
+let servicePercentPrice = getServicePercentPrices();
+let adaptive = confirm("Нужен ли адаптив на сайте?");
 
-console.log(typeof title);
-console.log(typeof fullPrice);
-console.log(typeof adaptive);
+function getFullPrice() {
+  return screenPrice + allServicePrices;
+}
 
-console.log(screens.length);
+function getServicePercentPrices(price) {
+  return Math.round((price - (price * (rollback / 100))) / 100) * 100
+};
 
-console.log(`Стоимость верстки экранов ${screenPrice} рублей/долларов/гривен/юани`);
-console.log(`Стоимость разработки сайта ${fullPrice} рублей/долларов/гривен/юани`);
+const getTitle = function(str) {
+  let trimStr = str.trim();
+  return trimStr.slice(0, 1).toUpperCase() + trimStr.substring(1).toLowerCase()
+};
 
-console.log("Стоимость верстки экранов " + screenPrice + " рублей/долларов/гривен/юани");
-console.log("Стоимость разработки сайта " + fullPrice + " рублей/долларов/гривен/юани");
+const showTypeOf = function(variable) {
+  console.log(variable, typeof variable);
+};
+
+const getRollbackMessage = function(price) {
+  if (price > 30000) {
+    return "Даем скидку в 10%";
+  } else if (price < 30000 && price >= 15000) {
+    return "Даем скидку в 5%";
+  } else if (price < 15000 && price > 0) {
+    return "Скидка не предусмотрена";
+  } else {
+    return "Что то пошло не так";
+  }
+}
+
+console.log(getTitle(title));
+
+showTypeOf(typeof title);
+showTypeOf(typeof fullPrice);
+showTypeOf(typeof adaptive);
 
 let lowerCaseScreens = screens.toLowerCase().split(', ');
-console.log(lowerCaseScreens);
 
-console.log(fullPrice * (rollback / 100));
+console.log(lowerCaseScreens);
+console.log(getRollbackMessage(fullPrice));
+console.log(getServicePercentPrices(fullPrice));
