@@ -22,7 +22,7 @@ function getFullPrice() {
 }
 
 function getServicePercentPrices() {
-  return Math.round((fullPrice - (fullPrice * (rollback / 100))) / 100) * 100
+  return Math.ceil(fullPrice - (fullPrice * (rollback / 100))) 
 };
 
 const getTitle = function(str) {
