@@ -8,10 +8,10 @@ let service2 = prompt("Какой дополнительный тип услуг
 let servicePrice2 = +prompt("Сколько это будет стоить?", 1000);
 
 const getAllServicePrices = function() {
-  return servicePrice1 + servicePrice2;
+  return servicePrice1 + servicePrice2
 };
 
-let allServicePrices = getAllServicePrices()
+let allServicePrices = getAllServicePrices();
 let fullPrice = getFullPrice();
 let rollback = 15;
 let servicePercentPrice = getServicePercentPrices();
@@ -22,7 +22,7 @@ function getFullPrice() {
 }
 
 function getServicePercentPrices() {
-  return Math.ceil(fullPrice - (fullPrice * (rollback / 100))) 
+  return Math.ceil(fullPrice - (fullPrice * (rollback / 100)))
 };
 
 const getTitle = function(str) {
