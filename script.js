@@ -21,8 +21,8 @@ function getFullPrice() {
   return screenPrice + allServicePrices;
 }
 
-function getServicePercentPrices(price) {
-  return Math.round((price - (price * (rollback / 100))) / 100) * 100
+function getServicePercentPrices() {
+  return Math.round((fullPrice - (fullPrice * (rollback / 100))) / 100) * 100
 };
 
 const getTitle = function(str) {
@@ -56,4 +56,4 @@ let lowerCaseScreens = screens.toLowerCase().split(', ');
 
 console.log(lowerCaseScreens);
 console.log(getRollbackMessage(fullPrice));
-console.log(getServicePercentPrices(fullPrice));
+console.log(getServicePercentPrices());
