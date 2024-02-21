@@ -27,7 +27,6 @@ const asking = function() {
   } while (!isNumber(screenPrice))
 
   screenPrice = +screenPrice;
-
   adaptive = confirm("Нужен ли адаптив на сайте?");
 };
 
@@ -39,7 +38,7 @@ const getAllServicePrices = function() {
     } else if (i === 1) {
       service2 = prompt("Какой дополнительный тип услуги нужен?", "Попап");
     }
-    
+
     let newSum = 0;
     do {
       newSum = prompt("Сколько это будет стоить?", '1500');
