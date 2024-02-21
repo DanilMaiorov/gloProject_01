@@ -18,13 +18,12 @@ const asking = function() {
   title = prompt("Как называется ваш проект?", "Калькулятор");
   screens = prompt("Какие типы экранов нужно разработать?", "Простые");
 
+  let price = 0;
   do {
-    screenPrice = prompt("Сколько будет стоить данная работа?", 10000);
-
-    if (isNumber(screenPrice)) {
-      screenPrice.trim();
+    price = prompt("Сколько будет стоить данная работа?", 10000)
+    if (price !== null) {
+      screenPrice = price.trim()
     }
-
   } while (!isNumber(screenPrice))
 
   screenPrice = +screenPrice;
@@ -40,16 +39,15 @@ const getAllServicePrices = function() {
     } else if (i === 1) {
       service2 = prompt("Какой дополнительный тип услуги нужен?", "Попап");
     }
+    
     let newSum = 0;
-
     do {
-      newSum = prompt("Сколько это будет стоить?", 2000);
-
-      if (isNumber(newSum)) {
-        newSum.trim();
-        sum += +newSum
+      newSum = prompt("Сколько это будет стоить?", '1500');
+      if (newSum !== null) {
+        newSum.trim()
       }
     } while(!isNumber(newSum));
+    sum += +newSum
   }
   return sum
 };
