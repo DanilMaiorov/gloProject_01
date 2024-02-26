@@ -42,7 +42,7 @@ const appData = {
       do {
         newSum = prompt("Сколько это будет стоить?", '1500');
         if (newSum !== null) {
-          newSum.trim()
+          newSum = newSum.trim()
         }
       } while(!appData.isNumber(newSum));
       sum += +newSum
