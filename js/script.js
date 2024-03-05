@@ -15,7 +15,6 @@ const totalInput3 = document.getElementsByClassName('total-input')[3];
 const totalInput4 = document.getElementsByClassName('total-input')[4];
 let screens = document.querySelectorAll('.screen');
 
-
 console.log(h1);
 console.log(buttons);
 console.log(plusBtn);
@@ -30,6 +29,41 @@ console.log(totalInput3);
 console.log(totalInput4);
 console.log(screens);
 
+const numCheck = function(numQuestion, num) {
+  do {
+    num = prompt(numQuestion)
+    if (num !== null && appData.isNumber(num)) {
+      num = num.trim()
+    }
+  } while (!appData.isNumber(num));
+  return num
+};
+
+const strCheck = function(strQuestion, str) {
+  do {
+    str = prompt(strQuestion);
+    if (str !== null && appData.isString(str)) {
+      str = str.trim()
+    }
+  } while (!appData.isString(str))
+  return str
+};
+
+const ask = function(promptName, promptPrice, amountQuestions) {
+  for (let i = 0; i < amountQuestions; i++) {
+    let name = "";
+    let price = 0;
+
+    name = strCheck(promptName, name);
+    price = numCheck(promptPrice, price);
+
+    if (appData.screens.length < amountQuestions) {
+      appData.screens.push({id: i, name: name, price: +price})
+    } else {
+      appData.services[`${name}_${i}`] = +price;
+    }
+  }
+};
 
 const appData = {
   title: "",
@@ -50,59 +84,15 @@ const appData = {
   asking: function() {
     this.title = prompt("Как называется ваш проект?", "Калькулятор");
 
-    for (let i = 0; i < 2; i++) {
-      let name = "";
-      let price = 0;
-
-      do {
-        name = prompt("Какие типы экранов нужно разработать?", "Простые");
-        if (name !== null) {
-          name = name.trim()
-        }
-      } while (!appData.isString(name));
-
-      do {
-        price = prompt("Сколько будет стоить данная работа?", 10000)
-        if (price !== null) {
-          price = price.trim()
-        }
-      } while (!appData.isNumber(price));
-
-      this.screens.push({id: i, name: name, price: +price})
-    }
-
-    for (let i = 0; i < 2; i++) {
-      let name = "";
-      let price = 0;
-
-      do {
-        name = prompt("Какой дополнительный тип услуги нужен?", "Метрика");
-        if (name !== null) {
-          name = name.trim()
-        }
-      } while (!appData.isString(name));
-
-      do {
-        price = prompt("Сколько это будет стоить?", '1500');
-        if (price !== null) {
-          price = price.trim()
-        }
-      } while(!appData.isNumber(price));
-
-      this.services[`${name}_${i}`] = +price;
-    }
+    ask("Какие типы экранов нужно разработать?", "Сколько будет стоить данная работа?", 2);
+    ask("Какой дополнительный тип услуги нужен?", "Сколько это будет стоить?", 2);
 
     this.adaptive = confirm("Нужен ли адаптив на сайте?");
   },
   addPrices: function() {
-/*     for(let screen of this.screens) {
-      appData.screenPrice += +screen.price
-    } */
-
-    this.screens.reduce(function(sum, item) {
-      return appData.screenPrice = sum + +item.price;
+    this.screenPrice = this.screens.reduce(function(sum, item) {
+      return sum + +item.price;
     }, 0)
-
 
   },
   getAllServicePrices: function() {
@@ -143,24 +133,7 @@ const appData = {
     console.log("getTitle", appData.title);
     console.log("services", appData.services);
     console.log("screens", appData.screens);
-/*     for (const key in this) {
-      console.log(key);
-    } */
   }
 }
 
-/* const getRollbackMessage = function(price) {
-  if (price > 30000) {
-    return "Даем скидку в 10%";
-  } else if (price < 30000 && price >= 15000) {
-    return "Даем скидку в 5%";
-  } else if (price < 15000 && price > 0) {
-    return "Скидка не предусмотрена";
-  } else {
-    return "Что то пошло не так";
-  }
-} */
-
 appData.start();
-
-
