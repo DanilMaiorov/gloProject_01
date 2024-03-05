@@ -1,5 +1,36 @@
 'use strict'
 
+
+const h1 = document.getElementsByTagName('h1')[0];
+const buttons = document.getElementsByClassName('handler_btn');
+const plusBtn = document.querySelector('.screen-btn');
+const percentItems = document.querySelectorAll('.other-items.percent');
+const numberItems = document.querySelectorAll('.other-items.number');
+const rollbackInput = document.querySelector('.rollback [type=range] ');
+const rollbackValue = document.querySelector('.rollback .range-value');
+const totalInput = document.getElementsByClassName('total-input')[0];
+const totalInput1 = document.getElementsByClassName('total-input')[1];
+const totalInput2 = document.getElementsByClassName('total-input')[2];
+const totalInput3 = document.getElementsByClassName('total-input')[3];
+const totalInput4 = document.getElementsByClassName('total-input')[4];
+let screens = document.querySelectorAll('.screen');
+
+
+console.log(h1);
+console.log(buttons);
+console.log(plusBtn);
+console.log(percentItems);
+console.log(numberItems);
+console.log(rollbackInput);
+console.log(rollbackValue);
+console.log(totalInput);
+console.log(totalInput1);
+console.log(totalInput2);
+console.log(totalInput3);
+console.log(totalInput4);
+console.log(screens);
+
+
 const appData = {
   title: "",
   screens: [],
