@@ -30,22 +30,23 @@ console.log(totalInput4);
 console.log(screens);
 
 const numCheck = function(numQuestion, num) {
+  console.log(this);
   do {
     num = prompt(numQuestion)
-    if (num !== null && appData.isNumber(num)) {
+    if (num !== null && this.isNumber(num)) {
       num = num.trim()
     }
-  } while (!appData.isNumber(num));
+  } while (!this.isNumber(num));
   return num
 };
 
 const strCheck = function(strQuestion, str) {
   do {
     str = prompt(strQuestion);
-    if (str !== null && appData.isString(str)) {
+    if (str !== null && this.isString(str)) {
       str = str.trim()
     }
-  } while (!appData.isString(str))
+  } while (!this.isString(str))
   return str
 };
 
@@ -54,13 +55,13 @@ const ask = function(promptName, promptPrice, amountQuestions) {
     let name = "";
     let price = 0;
 
-    name = strCheck(promptName, name);
-    price = numCheck(promptPrice, price);
+    name = strCheck.apply(this, [promptName, name]);
+    price = numCheck.apply(this, [promptPrice, price]);
 
-    if (appData.screens.length < amountQuestions) {
-      appData.screens.push({id: i, name: name, price: +price})
+    if (this.screens.length < amountQuestions) {
+      this.screens.push({id: i, name: name, price: +price})
     } else {
-      appData.services[`${name}_${i}`] = +price;
+      this.services[`${name}_${i}`] = +price;
     }
   }
 };
@@ -84,8 +85,8 @@ const appData = {
   asking: function() {
     this.title = prompt("Как называется ваш проект?", "Калькулятор");
 
-    ask("Какие типы экранов нужно разработать?", "Сколько будет стоить данная работа?", 2);
-    ask("Какой дополнительный тип услуги нужен?", "Сколько это будет стоить?", 2);
+    ask.apply(appData, ["Какие типы экранов нужно разработать?", "Сколько будет стоить данная работа?", 2]);
+    ask.apply(appData, ["Какой дополнительный тип услуги нужен?", "Сколько это будет стоить?", 2]);
 
     this.adaptive = confirm("Нужен ли адаптив на сайте?");
   },
@@ -97,16 +98,16 @@ const appData = {
   },
   getAllServicePrices: function() {
     for (let key in this.services) {
-      this.allServicePrices += appData.services[key];
+      this.allServicePrices += this.services[key];
     }
   },
 
   getFullPrice: function() {
-    this.fullPrice = +appData.screenPrice + +appData.allServicePrices;
+    this.fullPrice = +this.screenPrice + +this.allServicePrices;
   },
 
   getServicePercentPrices: function() {
-    this.servicePercentPrice = Math.ceil(appData.fullPrice - (appData.fullPrice * (appData.rollback / 100)))
+    this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback / 100)))
   },
 
   getTitle: function(str) {
@@ -116,23 +117,23 @@ const appData = {
   },
 
   start: function() {
-    appData.asking();
-    appData.addPrices();
-    appData.getTitle(appData.title);
-    appData.getAllServicePrices();
-    appData.getFullPrice();
+    this.asking();
+    this.addPrices();
+    this.getTitle(this.title);
+    this.getAllServicePrices();
+    this.getFullPrice();
     appData.getServicePercentPrices();
 
-    appData.logger();
+    this.logger();
   },
 
   logger: function(){
-    console.log("fullprice", appData.fullPrice);
-    console.log("servicePercentPrice", appData.servicePercentPrice);
-    console.log("allServicePrices", appData.allServicePrices);
-    console.log("getTitle", appData.title);
-    console.log("services", appData.services);
-    console.log("screens", appData.screens);
+    console.log("fullprice", this.fullPrice);
+    console.log("servicePercentPrice", this.servicePercentPrice);
+    console.log("allServicePrices", this.allServicePrices);
+    console.log("getTitle", this.title);
+    console.log("services", this.services);
+    console.log("screens", this.screens);
   }
 }
 
