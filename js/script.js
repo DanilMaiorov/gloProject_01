@@ -22,43 +22,6 @@ const totalCountRollback = document.getElementsByClassName('total-input')[4];
 let screens = document.querySelectorAll('.screen');
 let firstClone = screens[0].cloneNode(true);
 
-const numCheck = function(numQuestion, num) {
-  console.log(this);
-  do {
-    num = prompt(numQuestion)
-    if (num !== null && this.isNumber(num)) {
-      num = num.trim()
-    }
-  } while (!this.isNumber(num));
-  return num
-};
-
-const strCheck = function(strQuestion, str) {
-  do {
-    str = prompt(strQuestion);
-    if (str !== null && this.isString(str)) {
-      str = str.trim()
-    }
-  } while (!this.isString(str))
-  return str
-};
-
-const ask = function(promptName, promptPrice, amountQuestions) {
-  for (let i = 0; i < amountQuestions; i++) {
-    let name = "";
-    let price = 0;
-
-    name = strCheck.apply(this, [promptName, name]);
-    price = numCheck.apply(this, [promptPrice, price]);
-
-    if (this.screens.length < amountQuestions) {
-      this.screens.push({id: i, name: name, price: +price})
-    } else {
-      this.services[`${name}_${i}`] = +price;
-    }
-  }
-};
-
 const appData = {
   title: "",
   screens: [],
