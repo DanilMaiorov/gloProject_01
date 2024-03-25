@@ -13,6 +13,9 @@ const rollbackValue = document.querySelector('.rollback .range-value');
 const startBtn = document.querySelector('#start');
 const resetBtn = document.querySelector('#reset');
 
+/* ПРОДОЛЖИТЬ ОТСЮДА */
+const openCms = document.querySelector('#cms-open');
+
 const total = document.getElementsByClassName('total-input')[0];
 const totalCount = document.getElementsByClassName('total-input')[1];
 const totalCountOther = document.getElementsByClassName('total-input')[2];
@@ -42,11 +45,16 @@ const appData = {
   init: function() {
     this.addTitle();
 
-    startBtn.addEventListener('click', this.disableBtn.bind(appData));
-    buttonPlus.addEventListener('click', this.addScreenBlock.bind(appData));
+
+    startBtn.addEventListener('click', this.disableBtn.bind(this));
+    buttonPlus.addEventListener('click', this.addScreenBlock.bind(this));
+
+
+    resetBtn.addEventListener("click", this.reset.bind(this));
+
 
     // Слушатель на инпуте
-    rollbackInput.addEventListener('input', this.addRollback.bind(appData));
+    rollbackInput.addEventListener('input', this.addRollback.bind(this));
 
   },
   addTitle: function () {
@@ -58,36 +66,27 @@ const appData = {
   isString: function(str) {
     return (typeof str === 'string' || str instanceof String) && str !== "" && str !== null && isNaN(str)
   },
-
   disableBtn: function() {
-    // даю каждый раз значение false
     this.btnDisabled = false;
-    // нахожу все screen
     screens = document.querySelectorAll('.screen');
-    // перебираю
     screens.forEach(screen => {
       const select = screen.querySelector('select');
       const input = screen.querySelector('input');
-      // если какое-то из полей незаполнено - даю true
       if (select.value === "" || !this.isNumber(input.value)) {
         this.btnDisabled = true;
       }
     });
-    // проверяю на false и если осталось false, то считаю
       if(!this.btnDisabled) {
         this.start()
       } else {
         alert("Вводи значения");
       }
   },
-
-  // Слушатель на инпуте
   addRollback: function(elem){
     rollbackValue.textContent = `${elem.target.value}%`;
     this.rollback = +elem.target.value;
     totalCountRollback.value = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback / 100)));
   },
-
   addScreens: function(){
     screens = document.querySelectorAll('.screen');
     totalCount.value = 0;
@@ -96,16 +95,13 @@ const appData = {
       const input = screen.querySelector('input');
       const selectName = select.options[select.selectedIndex].textContent;
 
-      // Запрет нажатия кнопки 1 вариант
       if (select.value !== "" && this.isNumber(input.value)) {
-
         input.value = input.value.replace(/\s*/, "");
         this.screens.push({
           id: index,
           name: selectName,
           price: +select.value * +input.value
         });
-
         totalCount.value = +totalCount.value + +input.value
       } else {
         return
@@ -113,7 +109,7 @@ const appData = {
     });
   },
   addServices: function(){
-    otherItemsPercent.forEach((item, index) => {
+    otherItemsPercent.forEach(item => {
       const check = item.querySelector("input[type=checkbox]");
       const label = item.querySelector("label");
       const input = item.querySelector("input[type=text]");
@@ -121,7 +117,7 @@ const appData = {
         this.servicesPercent[label.textContent] = +input.value;
       }
     })
-    otherItemsNumber.forEach((item, index) => {
+    otherItemsNumber.forEach(item => {
       const check = item.querySelector("input[type=checkbox]");
       const label = item.querySelector("label");
       const input = item.querySelector("input[type=text]");
@@ -131,6 +127,7 @@ const appData = {
     })
   },
   addScreenBlock: function() {
+    screens = document.querySelectorAll('.screen');
     let cloneScreen = firstClone.cloneNode(true);
     screens[screens.length - 1].after(cloneScreen);
   },
@@ -150,7 +147,6 @@ const appData = {
       inputArr.push(this.isNumber(input.value))
     });
 
-    // Запрет нажатия кнопки 2 вариант
     if(selectArr.every(item => item) && inputArr.every(item => item === true)){
       this.screenPrice = this.screens.reduce(function(sum, item) {
         return sum + +item.price;
@@ -164,9 +160,20 @@ const appData = {
       }
       this.fullPrice = +this.screenPrice + +this.servicePricesNumber + this.servicePricesPercent;
 
-      // Перенос логики this.getServicePercentPrice
       this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback / 100)))
     }
+  },
+
+  disabler: function(bool, resetStatus, startStatus) {
+    screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => {
+      const select = screen.querySelector('select');
+      const input = screen.querySelector('input');
+      select.disabled = bool;
+      input.disabled = bool;
+    });
+    startBtn.style.display = startStatus;
+    resetBtn.style.display = resetStatus;
   },
 
   start: function() {
@@ -174,19 +181,63 @@ const appData = {
     this.addServices();
     this.addPrices();
 
-    console.log(this);
-    // appData.getAllServicePrices();
-    // appData.logger();
+  // метод disabler для блокировки полей ввода
+    this.disabler(true, "block", "none");
     this.showResult();
+    console.log(this);
   },
-  logger: function(){
-    console.log("fullprice", this.fullPrice);
-    console.log("servicePercentPrice", this.servicePercentPrice);
-    console.log("allServicePrices", this.allServicePrices);
-    console.log("getTitle", this.title);
-    console.log("services", this.services);
-    console.log("screens", this.screens);
-  }
+
+  // удаление блоков экранов, кроме исходного
+  screensRemove: function() {
+    screens = document.querySelectorAll('.screen');
+    screens.forEach((screen, i) => {
+      if (i !== 0) {
+      screen.remove();
+      }
+    });
+    let newScreen = screens[0];
+      screens = [];
+      screens.push(newScreen);
+  },
+  // очистка блоков экранов
+  screensReset: function() {
+    screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => {
+      const select = screen.querySelector('select');
+      const input = screen.querySelector('input');
+      select.options[select.selectedIndex] = select.options[select.selectedIndex][0];
+      input.value = "";
+    });
+  },
+  // очистка блоков экранов
+  inputsReset: function() {
+    const inputs = document.querySelectorAll('.total-input');
+    inputs.forEach(input => {
+      input.value = 0;
+    });
+  },
+  // очистка всех данных объекта
+  clear: function(){
+    this.screens = [];
+    this.servicesPercent = {};
+    this.servicesNumber = {};
+    for (const key in this) {
+      if (typeof(this[key]) === "number") {
+        this[key] = 0;
+      }
+    };
+  },
+// метод reset
+  reset: function(){
+    this.inputsReset();
+    this.screensReset();
+    this.screensRemove();
+    this.disabler(false, "none", "block");
+
+    this.clear();
+
+    console.log(this);
+  },
 }
 
 appData.init();
