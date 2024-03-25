@@ -23,18 +23,8 @@ const totalCountRollback = document.getElementsByClassName('total-input')[4];
 let screens = document.querySelectorAll('.screen');
 let firstClone = screens[0].cloneNode(true);
 
-/* console.log(buttons);
-console.log(buttonPlus);
-console.log(otherItemsPercent);
-console.log(otherItemsNumber);
-console.log(rollbackInput);
-console.log(rollbackValue);
-console.log(total);
-console.log(totalCount);
-console.log(totalCountOther);
-console.log(fullTotalCount);
-console.log(totalCountRollback);
-console.log(screens); */
+
+// startBtn.disabled = true;
 
 const appData = {
   title: "",
@@ -48,10 +38,15 @@ const appData = {
   servicePercentPrice: 0,
   servicesPercent: {},
   servicesNumber: {},
+
+
+  // придумал ключ btnDisabled со значением false
+  btnDisabled: false,
+
   init: function() {
     this.addTitle();
 
-    startBtn.addEventListener('click', this.start.bind(appData));
+    startBtn.addEventListener('click', this.disableBtn.bind(appData));
     buttonPlus.addEventListener('click', this.addScreenBlock.bind(appData));
 
     // Слушатель на инпуте
@@ -66,6 +61,28 @@ const appData = {
   },
   isString: function(str) {
     return (typeof str === 'string' || str instanceof String) && str !== "" && str !== null && isNaN(str)
+  },
+
+  disableBtn: function() {
+    // даю каждый раз значение false
+    this.btnDisabled = false;
+    // нахожу все screen
+    screens = document.querySelectorAll('.screen');
+    // перебираю
+    screens.forEach(screen => {
+      const select = screen.querySelector('select');
+      const input = screen.querySelector('input');
+      // если какое-то из полей незаполнено - даю true
+      if (select.value === "" || !this.isNumber(input.value)) {
+        this.btnDisabled = true;
+      }
+    });
+    // проверяю на false и если осталось false, то считаю
+      if(!this.btnDisabled) {
+        this.start()
+      } else {
+        alert("Вводи значения");
+      }
   },
 
   // Слушатель на инпуте
@@ -88,22 +105,16 @@ const appData = {
 
         input.value = input.value.replace(/\s*/, "");
         this.screens.push({
-          id: index, 
-          name: selectName, 
+          id: index,
+          name: selectName,
           price: +select.value * +input.value
         });
 
-        // фильтр для корректного сложения суммы (но не совсем понимаю как работает, взял со стаковерфлоу)
-        // this.screens = this.screens.filter((value, index, self) =>
-        // index === self.findIndex((item) => (
-        //   item.name === value.name
-        // )))
-        
         totalCount.value = +totalCount.value + +input.value
       } else {
         return
       }
-    }); 
+    });
   },
   addServices: function(){
     otherItemsPercent.forEach((item, index) => {
@@ -124,7 +135,6 @@ const appData = {
     })
   },
   addScreenBlock: function() {
-    let screens = document.querySelectorAll('.screen');
     let cloneScreen = firstClone.cloneNode(true);
     screens[screens.length - 1].after(cloneScreen);
   },
@@ -158,7 +168,7 @@ const appData = {
       }
       this.fullPrice = +this.screenPrice + +this.servicePricesNumber + this.servicePricesPercent;
 
-      // Перенос логики this.getServicePercentPrice 
+      // Перенос логики this.getServicePercentPrice
       this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback / 100)))
     }
   },
