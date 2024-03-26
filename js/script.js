@@ -14,7 +14,8 @@ const startBtn = document.querySelector('#start');
 const resetBtn = document.querySelector('#reset');
 
 /* ПРОДОЛЖИТЬ ОТСЮДА */
-const openCms = document.querySelector('#cms-open');
+const cmsCheckbox = document.querySelector('#cms-open');
+const cmsOptions = document.querySelector(".hidden-cms-variants");
 
 const total = document.getElementsByClassName('total-input')[0];
 const totalCount = document.getElementsByClassName('total-input')[1];
@@ -49,6 +50,8 @@ const appData = {
     startBtn.addEventListener('click', this.disableBtn.bind(this));
     buttonPlus.addEventListener('click', this.addScreenBlock.bind(this));
 
+
+    cmsCheckbox.addEventListener('click', this.openCmsOptions.bind(this));
 
     resetBtn.addEventListener("click", this.reset.bind(this));
 
@@ -164,6 +167,24 @@ const appData = {
     }
   },
 
+  openCmsOptions: function(){
+    if (cmsCheckbox.checked) {
+      cmsOptions.style.display = "flex";
+    } else {
+      cmsOptions.style.display = "none";
+    }
+
+
+  },
+
+  hideCmsOptions: function(){
+    cmsOptions.style.display = "none";
+  },
+
+
+
+
+
   disabler: function(bool, resetStatus, startStatus) {
     screens = document.querySelectorAll('.screen');
     screens.forEach(screen => {
@@ -215,6 +236,9 @@ const appData = {
     inputs.forEach(input => {
       input.value = 0;
     });
+    document.querySelectorAll("input[type=checkbox]").forEach(item => item.checked = false);
+    rollbackInput.value = 0;
+    rollbackValue.textContent = `${rollbackInput.value}%`;
   },
   // очистка всех данных объекта
   clear: function(){
@@ -232,6 +256,9 @@ const appData = {
     this.inputsReset();
     this.screensReset();
     this.screensRemove();
+
+    this.hideCmsOptions();
+
     this.disabler(false, "none", "block");
 
     this.clear();
