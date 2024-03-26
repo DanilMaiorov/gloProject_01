@@ -13,9 +13,11 @@ const rollbackValue = document.querySelector('.rollback .range-value');
 const startBtn = document.querySelector('#start');
 const resetBtn = document.querySelector('#reset');
 
-/* ПРОДОЛЖИТЬ ОТСЮДА */
 const cmsCheckbox = document.querySelector('#cms-open');
+const cmsSelect = document.querySelector("#cms-select");
 const cmsOptions = document.querySelector(".hidden-cms-variants");
+const otherCmsOption = cmsOptions.querySelector(".main-controls__input");
+const cmsOtherInput = otherCmsOption.querySelector("input");
 
 const total = document.getElementsByClassName('total-input')[0];
 const totalCount = document.getElementsByClassName('total-input')[1];
@@ -36,29 +38,33 @@ const appData = {
   servicePricesNumber: 0,
   fullPrice: 0,
   servicePercentPrice: 0,
+  cmsValue: 0,
   servicesPercent: {},
   servicesNumber: {},
-
-
-  // придумал ключ btnDisabled со значением false
   btnDisabled: false,
 
   init: function() {
     this.addTitle();
-
-
     startBtn.addEventListener('click', this.disableBtn.bind(this));
-    buttonPlus.addEventListener('click', this.addScreenBlock.bind(this));
-
-
-    cmsCheckbox.addEventListener('click', this.openCmsOptions.bind(this));
-
     resetBtn.addEventListener("click", this.reset.bind(this));
 
+    buttonPlus.addEventListener('click', this.addScreenBlock.bind(this));
 
-    // Слушатель на инпуте
+    cmsCheckbox.addEventListener('click', this.openCmsOptions.bind(this));
+    cmsOptions.addEventListener('click', (e) => {
+      if (e.target.value === "other") {
+        otherCmsOption.style.display = "block";
+        cmsOtherInput.addEventListener('input', () => this.cmsValue = +cmsOtherInput.value);
+      } else if ((e.target.value === "50" || e.target.value === "") && !e.target.closest("#cms-other-input")) {
+        otherCmsOption.style.display = "none";
+        cmsOtherInput.value !== "";
+          if(cmsOtherInput.value !== "") {
+            cmsOtherInput.value = "";
+          }
+        this.cmsValue = +e.target.value;
+      };
+    });
     rollbackInput.addEventListener('input', this.addRollback.bind(this));
-
   },
   addTitle: function () {
     document.title = title.textContent
@@ -80,7 +86,14 @@ const appData = {
       }
     });
       if(!this.btnDisabled) {
-        this.start()
+        if(otherCmsOption.style.display === "block") {
+          if(this.isNumber(cmsOtherInput.value) || cmsOtherInput.value === "") {
+            // пользак может выбрать cms, но не вводить значение %, расчёт произведётся
+            this.start()
+          }
+        } else {
+          this.start()
+        }
       } else {
         alert("Вводи значения");
       }
@@ -161,7 +174,10 @@ const appData = {
       for (let key in this.servicesPercent) {
         this.servicePricesPercent += this.screenPrice * (this.servicesPercent[key] / 100);
       }
+      // правка в расчете с учётом CMS
       this.fullPrice = +this.screenPrice + +this.servicePricesNumber + this.servicePricesPercent;
+
+      this.fullPrice = this.fullPrice + (this.fullPrice * this.cmsValue) / 100
 
       this.servicePercentPrice = Math.ceil(this.fullPrice - (this.fullPrice * (this.rollback / 100)))
     }
@@ -173,17 +189,8 @@ const appData = {
     } else {
       cmsOptions.style.display = "none";
     }
-
-
+    cmsOptions.querySelector(".main-controls__input");
   },
-
-  hideCmsOptions: function(){
-    cmsOptions.style.display = "none";
-  },
-
-
-
-
 
   disabler: function(bool, resetStatus, startStatus) {
     screens = document.querySelectorAll('.screen');
@@ -195,20 +202,21 @@ const appData = {
     });
     startBtn.style.display = startStatus;
     resetBtn.style.display = resetStatus;
+    buttonPlus.disabled = bool;
+    cmsOtherInput.disabled = bool;
+    document.querySelectorAll("input[type=checkbox]").forEach(item =>  item.disabled = bool);
+    cmsSelect.disabled = bool;
   },
 
   start: function() {
     this.addScreens();
     this.addServices();
     this.addPrices();
-
-  // метод disabler для блокировки полей ввода
     this.disabler(true, "block", "none");
     this.showResult();
     console.log(this);
+    console.log(this.cmsValue);
   },
-
-  // удаление блоков экранов, кроме исходного
   screensRemove: function() {
     screens = document.querySelectorAll('.screen');
     screens.forEach((screen, i) => {
@@ -220,7 +228,6 @@ const appData = {
       screens = [];
       screens.push(newScreen);
   },
-  // очистка блоков экранов
   screensReset: function() {
     screens = document.querySelectorAll('.screen');
     screens.forEach(screen => {
@@ -230,7 +237,6 @@ const appData = {
       input.value = "";
     });
   },
-  // очистка блоков экранов
   inputsReset: function() {
     const inputs = document.querySelectorAll('.total-input');
     inputs.forEach(input => {
@@ -240,6 +246,16 @@ const appData = {
     rollbackInput.value = 0;
     rollbackValue.textContent = `${rollbackInput.value}%`;
   },
+
+  // сброс CMS
+  cmsReset: function() {
+    cmsSelect.options[0].selected = true
+    cmsOptions.style.display = "none";
+    otherCmsOption.style.display = "none";
+    cmsOtherInput.value = "";
+
+  },
+
   // очистка всех данных объекта
   clear: function(){
     this.screens = [];
@@ -256,13 +272,9 @@ const appData = {
     this.inputsReset();
     this.screensReset();
     this.screensRemove();
-
-    this.hideCmsOptions();
-
+    this.cmsReset();
     this.disabler(false, "none", "block");
-
     this.clear();
-
     console.log(this);
   },
 }
